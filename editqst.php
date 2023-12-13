@@ -1,22 +1,50 @@
 <?php
 include "connection.php";
+
 if (isset($_POST['editqst'])) {
     $idq = $_POST['id_qst'];
     $titre = $_POST['titre_qst'];
     $d = $_POST['descrp_qst'];
-    $dateM = $_POST['date_qst'];
-    $sql = "UPDATE question SET titre_qst='$titre', descrp_qst='$d', date_qst = NOW() WHERE id_qst='$idq'";
-    $result = mysqli_query($conn, $sql);
+
+    // Create a prepared statement
+    $sql = "UPDATE question SET titre_qst=?, descrp_qst=?, date_qst=NOW() WHERE id_qst=?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // Bind parameters to the statement
+    mysqli_stmt_bind_param($stmt, "ssi", $titre, $d, $idq);
+
+    // Execute the statement
+    $result = mysqli_stmt_execute($stmt);
+
+    // Check if the query was successful
     if ($result == TRUE) {
         header('Location: newM.php');
+    } else {
+        // Handle the error if needed
+        echo "Error: " . mysqli_error($conn);
     }
+
+    // Close the statement
+    mysqli_stmt_close($stmt);
 }
 
 if (isset($_GET['id_qst'])) {
     $idq = $_GET['id_qst'];
-    $sql = "SELECT * FROM question WHERE id_qst='$idq'";
-    $result = mysqli_query($conn, $sql);
+
+    // Create a prepared statement for SELECT
+    $sql = "SELECT * FROM question WHERE id_qst=?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // Bind parameters to the statement
+    mysqli_stmt_bind_param($stmt, "i", $idq);
+
+    // Execute the statement
+    $result = mysqli_stmt_execute($stmt);
+
     if ($result) {
+        // Fetch result
+        $result = mysqli_stmt_get_result($stmt);
+
         while ($row = mysqli_fetch_assoc($result)) {
             $idq = $row['id_qst'];
             $titre = $row['titre_qst'];
@@ -24,7 +52,6 @@ if (isset($_GET['id_qst'])) {
             $dateM = $row['date_qst'];
         }
 ?>
-
 
 
         <!doctype html>
@@ -77,10 +104,15 @@ if (isset($_GET['id_qst'])) {
 
         </html>
 
-
 <?php
     } else {
         header('Location: newM.php');
     }
+
+    // Close the statement
+    mysqli_stmt_close($stmt);
 }
+
+// Close the connection
+mysqli_close($conn);
 ?>

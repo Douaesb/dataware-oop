@@ -1,31 +1,56 @@
 <?php
 include "connection.php";
+
 if (isset($_POST['editans'])) {
     $ida = $_POST['id_rep'];
     $de = $_POST['descrp_rep'];
-    $dateM = $_POST['date_rep'];
-    $sql = "UPDATE reponse SET descrp_rep='$de', date_rep = NOW() WHERE id_rep='$ida'";
-    $result = mysqli_query($conn, $sql);
+
+    // Create a prepared statement
+    $sql = "UPDATE reponse SET descrp_rep=?, date_rep=NOW() WHERE id_rep=?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // Bind parameters to the statement
+    mysqli_stmt_bind_param($stmt, "si", $de, $ida);
+
+    // Execute the statement
+    $result = mysqli_stmt_execute($stmt);
+
+    // Check if the query was successful
     if ($result == TRUE) {
         header('Location: newM2.php');
+    } else {
+        // Handle the error if needed
+        echo "Error: " . mysqli_error($conn);
     }
+
+    // Close the statement
+    mysqli_stmt_close($stmt);
 }
 
 if (isset($_GET['id_rep'])) {
     $idq = $_GET['id_rep'];
-    $sql = "SELECT * FROM reponse WHERE id_rep='$idq'";
-    $result = mysqli_query($conn, $sql);
+
+    // Create a prepared statement for SELECT
+    $sql = "SELECT * FROM reponse WHERE id_rep=?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // Bind parameters to the statement
+    mysqli_stmt_bind_param($stmt, "i", $idq);
+
+    // Execute the statement
+    $result = mysqli_stmt_execute($stmt);
+
     if ($result) {
+        // Fetch result
+        $result = mysqli_stmt_get_result($stmt);
+
         while ($row = mysqli_fetch_assoc($result)) {
             $ida = $row['id_rep'];
             $de = $row['descrp_rep'];
             $dateM = $row['date_rep'];
         }
 ?>
-
-
-
-        <!doctype html>
+ <!doctype html>
         <html lang="eng">
 
         <head>
@@ -69,11 +94,15 @@ if (isset($_GET['id_rep'])) {
         </body>
 
         </html>
-
-
 <?php
     } else {
         header('Location: newM2.php');
     }
+
+    // Close the statement
+    mysqli_stmt_close($stmt);
 }
+
+// Close the connection
+mysqli_close($conn);
 ?>

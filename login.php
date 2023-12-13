@@ -24,38 +24,38 @@
                         $email = $_POST['email'];
                         $password = $_POST['pass'];
 
-                        $query = "SELECT * FROM `utilisateur` WHERE email='$email' AND pass='$password'";
+                        $query = "SELECT id, role, pass FROM utilisateur WHERE email=?";
+                        $stmt = mysqli_prepare($conn, $query);
+                        mysqli_stmt_bind_param($stmt, "s", $email);
+                        mysqli_stmt_execute($stmt);
+                        mysqli_stmt_bind_result($stmt, $user_id, $role, $hashed_password);
+                        mysqli_stmt_fetch($stmt);
 
-                        $result = mysqli_query($conn, $query);
+                        // Verify the password using password_verify
+                        if (password_verify($password, $hashed_password)) {
+                            session_start();
+                            $_SESSION['id'] = $user_id;
 
-                        if ($result !== false) {
-                            $userData = mysqli_fetch_assoc($result);
-
-                            if ($userData) {
-                                session_start();
-                                $_SESSION['id'] = $userData['id'];
-                                $role = $userData['role'];
-
-                                switch ($role) {
-                                    case 'membre':
-                                        $_SESSION['email'] = $email;
-                                        header("Location: dashboardm.php");
-                                        exit();
-                                    case 'ProductOwner':
-                                        $_SESSION['email'] = $email;
-                                        header("Location: dashboardp.php");
-                                        exit();
-                                    case 'ScrumMaster':
-                                        $_SESSION['email'] = $email;
-                                        header("Location: dashboards.php");
-                                        exit();
-                                }
-                            } else {
-                                $message = "L'email ou le mot de passe est incorrect.";
+                            switch ($role) {
+                                case 'membre':
+                                    $_SESSION['email'] = $email;
+                                    header("Location: dashboardm.php");
+                                    exit();
+                                case 'ProductOwner':
+                                    $_SESSION['email'] = $email;
+                                    header("Location: dashboardp.php");
+                                    exit();
+                                case 'ScrumMaster':
+                                    $_SESSION['email'] = $email;
+                                    header("Location: dashboards.php");
+                                    exit();
                             }
                         } else {
-                            $message = "Erreur de requête SQL : " . mysqli_error($conn);
+                            $message = "L'email ou le mot de passe est incorrect.";
                         }
+
+                        mysqli_stmt_close($stmt);
+                        mysqli_close($conn);
                     }
                     ?>
                     <form class="space-y-4 md:space-y-6" action="" method="post" name="login">

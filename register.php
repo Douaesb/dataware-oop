@@ -17,25 +17,26 @@
                         Créer un compte
                     </h1>
                     <?php
-                    require('connection.php');
-                    if (isset($_REQUEST['nom'], $_REQUEST['prenom'], $_REQUEST['email'], $_REQUEST['pass'], $_REQUEST['tel'])) {
-                        $username = $_REQUEST['nom'];
-                        $surname = $_REQUEST['prenom'];
-                        $email = $_REQUEST['email'];
-                        $password = $_REQUEST['pass'];
-                        $tel = $_REQUEST['tel'];
+                   require('connection.php');
 
-                        $query = "INSERT INTO `utilisateur` (nom, prenom, email, pass, tel, statut, role)
-                                  VALUES ('$username','$surname', '$email','$password','$tel','active','membre')";
-
-                        $res = mysqli_query($conn, $query);
-                        if ($res) {
-                            echo "<div class='success'>
-                                    <h3>Vous êtes inscrit avec succès.</h3>
-                                    <p>Cliquez ici pour vous <a href='login.php'>connecter</a></p>
-                                  </div>";
-                        }
-                    } else {
+                   if (isset($_REQUEST['nom'], $_REQUEST['prenom'], $_REQUEST['email'], $_REQUEST['pass'], $_REQUEST['tel'])) {
+                       $username = $_REQUEST['nom'];
+                       $surname = $_REQUEST['prenom'];
+                       $email = $_REQUEST['email'];
+                       $password = password_hash($_REQUEST['pass'], PASSWORD_DEFAULT); // Hash the password
+                       $tel = $_REQUEST['tel'];
+                   
+                       $query = "INSERT INTO `utilisateur` (nom, prenom, email, pass, tel, statut, role)
+                                 VALUES ('$username','$surname', '$email','$password','$tel','active','membre')";
+                   
+                       $res = mysqli_query($conn, $query);
+                       if ($res) {
+                           echo "<div class='success'>
+                                   <h3>Vous êtes inscrit avec succès.</h3>
+                                   <p>Cliquez ici pour vous <a href='login.php'>connecter</a></p>
+                                 </div>";
+                       }
+                   } else {
                     ?>
                         <form class="space-y-4 md:space-y-6" action="" method="post">
                             <div class="flex justify-between">

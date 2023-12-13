@@ -1,29 +1,56 @@
 <?php
 include "connection.php";
-    if (isset($_POST['edit'])) {
-        $id = $_POST['id_equipe'];
-        $name = $_POST['nom_equipe'];
-        $date = $_POST['date_creation'];
-        $sql = "UPDATE equipe SET nom_equipe='$name', date_creation='$date' WHERE id_equipe='$id'";
-        $result = mysqli_query($conn, $sql);
-        if ($result == TRUE) {
-            header('Location: dashboards.php');
-        }
+
+if (isset($_POST['edit'])) {
+    $id = $_POST['id_equipe'];
+    $name = $_POST['nom_equipe'];
+    $date = $_POST['date_creation'];
+
+    // Create a prepared statement
+    $sql = "UPDATE equipe SET nom_equipe=?, date_creation=? WHERE id_equipe=?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // Bind parameters to the statement
+    mysqli_stmt_bind_param($stmt, "ssi", $name, $date, $id);
+
+    // Execute the statement
+    $result = mysqli_stmt_execute($stmt);
+
+    // Check if the query was successful
+    if ($result) {
+        header('Location: dashboards.php');
+    } else {
+        // Handle the error if needed
+        echo "Error: " . mysqli_error($conn);
     }
+
+    // Close the statement
+    mysqli_stmt_close($stmt);
+}
 
 if (isset($_GET['id_equipe'])) {
     $id = $_GET['id_equipe'];
-    $sql = "SELECT * FROM equipe WHERE id_equipe='$id'";
-    $result = mysqli_query($conn, $sql);
+
+    // Create a prepared statement for SELECT
+    $sql = "SELECT * FROM equipe WHERE id_equipe=?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // Bind parameters to the statement
+    mysqli_stmt_bind_param($stmt, "i", $id);
+
+    // Execute the statement
+    $result = mysqli_stmt_execute($stmt);
+
     if ($result) {
+        // Fetch result
+        $result = mysqli_stmt_get_result($stmt);
+
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id_equipe'];
             $name = $row['nom_equipe'];
             $date = $row['date_creation'];
         }
     ?>
-
-
 
 <!doctype html>
 <html lang="eng">
@@ -72,10 +99,19 @@ if (isset($_GET['id_equipe'])) {
 </html>
 
 
-    <?php
-    } else{
+<?php
+    } else {
         header('Location: dashboards.php');
     }
+
+    // Close the statement
+    mysqli_stmt_close($stmt);
 }
+
+// Close the connection
+mysqli_close($conn);
 ?>
+
+
+
 

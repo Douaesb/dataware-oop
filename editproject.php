@@ -1,27 +1,57 @@
 <?php
 include "connection.php";
+
 if (isset($_POST['editproject'])) {
     $id = $_POST['id_pro'];
     $name = $_POST['nom_pro'];
     $desc = $_POST['descrp_pro'];
-    $sql = "UPDATE projet SET nom_pro='$name', descrp_pro='$desc' WHERE id_pro='$id'";
-    $result = mysqli_query($conn, $sql);
+
+    // Create a prepared statement
+    $sql = "UPDATE projet SET nom_pro=?, descrp_pro=? WHERE id_pro=?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // Bind parameters to the statement
+    mysqli_stmt_bind_param($stmt, "ssi", $name, $desc, $id);
+
+    // Execute the statement
+    $result = mysqli_stmt_execute($stmt);
+
+    // Check if the query was successful
     if ($result == TRUE) {
         header('Location: dashboardp.php');
+    } else {
+        // Handle the error if needed
+        echo "Error: " . mysqli_error($conn);
     }
+
+    // Close the statement
+    mysqli_stmt_close($stmt);
 }
 
 if (isset($_GET['id_pro'])) {
     $id = $_GET['id_pro'];
-    $sql = "SELECT * FROM projet WHERE id_pro='$id'";
-    $result = mysqli_query($conn, $sql);
+
+    // Create a prepared statement for SELECT
+    $sql = "SELECT * FROM projet WHERE id_pro=?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // Bind parameters to the statement
+    mysqli_stmt_bind_param($stmt, "i", $id);
+
+    // Execute the statement
+    $result = mysqli_stmt_execute($stmt);
+
     if ($result) {
+        // Fetch result
+        $result = mysqli_stmt_get_result($stmt);
+
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id_pro'];
             $name = $row['nom_pro'];
             $desc = $row['descrp_pro'];
         }
 ?>
+
 
 
         <!doctype html>
@@ -73,10 +103,15 @@ if (isset($_GET['id_pro'])) {
 
         </html>
 
-
 <?php
     } else {
         header('Location: dashboardp.php');
     }
+
+    // Close the statement
+    mysqli_stmt_close($stmt);
 }
+
+// Close the connection
+mysqli_close($conn);
 ?>

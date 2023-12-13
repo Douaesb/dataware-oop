@@ -1,7 +1,7 @@
 <?php
 
 $servername = "localhost";
-$database = "dw";
+$database = "dwoop";
 $username = "root";
 $password = "";
 

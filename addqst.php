@@ -5,8 +5,11 @@ session_start();
 
 // Retrieve id_pro for the logged-in user
 $id_user = $_SESSION['id'];
-$sql_pro = "SELECT projet FROM utilisateur WHERE id = $id_user";
-$result_pro = mysqli_query($conn, $sql_pro);
+$sql_pro = "SELECT projet FROM utilisateur WHERE id = ?";
+$stmt = mysqli_prepare($conn,$sql_pro);
+mysqli_stmt_bind_param($stmt,"i",$id_user);
+mysqli_stmt_execute($stmt);
+$result_pro = mysqli_stmt_get_result($stmt);
 
 if ($result_pro && $row_pro = mysqli_fetch_assoc($result_pro)) {
     $idpro=$row_pro['projet'];
@@ -17,8 +20,10 @@ if ($result_pro && $row_pro = mysqli_fetch_assoc($result_pro)) {
         $title = $_GET['title'];
         $desc = $_GET['desc'];
         $id = $_SESSION['id'];
-        $sql = "INSERT INTO question (titre_qst, descrp_qst, date_qst, id_pro, id_user) VALUES ('$title', '$desc', DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'),'$idpro', '$id')";
-        $result = mysqli_query($conn, $sql);
+        $sql = "INSERT INTO question (titre_qst, descrp_qst, date_qst, id_pro, id_user) VALUES (?,?, DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'),?,?)";
+        $stmt = mysqli_prepare($conn,$sql);
+        mysqli_stmt_bind_param($stmt,"ssii",$title,$desc,$idpro,$id);
+        $result = mysqli_stmt_execute($stmt);
         $last_id = mysqli_insert_id($conn);
         if($result) {
             echo $last_id;

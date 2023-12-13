@@ -1,19 +1,21 @@
 <?php
 include("connection.php");
 
-// Initialiser la session
+
 session_start();
 $id = $_SESSION['id'];
-// Vérifiez si l'utilisateur est connecté, sinon redirigez-le vers la page de connexion
+
 if (!isset($_SESSION["email"])) {
     header("Location: login.php");
     exit();
 }
 
 
-$sqlUser = "SELECT nom FROM utilisateur WHERE id = $id";
-$resultUser = mysqli_query($conn, $sqlUser);
-
+$sqlUser = "SELECT nom FROM utilisateur WHERE id = ?";
+$stmt = mysqli_prepare($conn,$sqlUser);
+        mysqli_stmt_bind_param($stmt,"i",$id);
+        mysqli_stmt_execute($stmt);
+        $resultUser = mysqli_stmt_get_result($stmt);
 if ($resultUser) {
     $rowUser = mysqli_fetch_assoc($resultUser);
     $userName = $rowUser["nom"];
@@ -94,12 +96,12 @@ if ($resultUser) {
                                             FROM utilisateur
                                             JOIN equipe ON utilisateur.equipe = equipe.id_equipe
                                             JOIN projet ON equipe.id_pro = projet.id_pro
-                                            WHERE utilisateur.id = $id;
+                                            WHERE utilisateur.id = ?;
                                             ";
-
-
-                                            $result = mysqli_query($conn, $sql);
-
+                                            $stmt = mysqli_prepare($conn,$sql);
+                                            mysqli_stmt_bind_param($stmt,"i",$id);
+                                            mysqli_stmt_execute($stmt);
+                                            $result = mysqli_stmt_get_result($stmt);
                                             if ($result) {
                                                 while ($row = mysqli_fetch_assoc($result)) {
                                             ?>
@@ -166,11 +168,12 @@ if ($resultUser) {
                                             $sql = "SELECT equipe.id_equipe, equipe.nom_equipe, equipe.date_creation
                                             FROM utilisateur
                                             JOIN equipe ON utilisateur.equipe = equipe.id_equipe
-                                            WHERE utilisateur.id = $id;
+                                            WHERE utilisateur.id = ?;
                                             ";
-
-                                            // $sql = "SELECT * FROM equipe";
-                                            $result = mysqli_query($conn, $sql);
+                                            $stmt = mysqli_prepare($conn,$sql);
+                                            mysqli_stmt_bind_param($stmt,"i",$id);
+                                            mysqli_stmt_execute($stmt);
+                                            $result = mysqli_stmt_get_result($stmt);
 
                                             if ($result) {
                                                 while ($row = mysqli_fetch_assoc($result)) {
