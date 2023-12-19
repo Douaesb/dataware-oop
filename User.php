@@ -7,28 +7,7 @@ class User{
     protected $password;
     protected $tel;
     
-     
-        public function setUsername($username) {
-            $this->username = $username;
-        }
-    
-        public function setSurname($surname) {
-            $this->surname = $surname;
-        }
-    
-        public function setEmail($email) {
-            $this->email = $email;
-        }
-    
-        public function setPassword($password) {
-            $this->password = $password;
-        }
-    
-        public function setTel($tel) {
-            $this->tel = $tel;
-        }
-    
-    
+
         public function __construct($db)
         {
             $this->conn = $db;

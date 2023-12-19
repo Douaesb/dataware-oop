@@ -1,10 +1,10 @@
 <?php
 class Projet
 {
-    protected $conn;
-    protected $id_pro;
-    protected $nom_pro;
-    protected $descrp_pro;
+    private $conn;
+    private $id_pro;
+    private $nom_pro;
+    private $descrp_pro;
 
     public function __construct($db)
     {
@@ -25,6 +25,21 @@ class Projet
     public function setDescrpPro($descrp_pro)
     {
         $this->descrp_pro = $descrp_pro;
+    }
+
+    public function getIdPro()
+    {
+        return $this->id_pro;
+    }
+
+    public function getNomPro()
+    {
+        return $this->nom_pro;
+    }
+
+    public function getDescrpPro()
+    {
+        return $this->descrp_pro;
     }
 
 
@@ -75,19 +90,6 @@ class Projet
     }
 
 
-    public function getIdPro()
-    {
-        return $this->id_pro;
-    }
 
-    public function getNomPro()
-    {
-        return $this->nom_pro;
-    }
-
-    public function getDescrpPro()
-    {
-        return $this->descrp_pro;
-    }
 
 }
