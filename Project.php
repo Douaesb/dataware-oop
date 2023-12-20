@@ -45,11 +45,10 @@ class Projet
 
     public function displayProjects()
     {
-        $sql = "SELECT * FROM projet";
+        $sql = "SELECT * FROM projet WHERE nom_pro <> 'none'";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
-        $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $projects;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getProject($idpro)
@@ -88,6 +87,16 @@ class Projet
         $stmt->bindParam(':id_pro', $this->id_pro);
         return $stmt->execute();
     }
+
+    public function DisplayScrum()
+    {
+        $sql = "SELECT * FROM projet inner join  utilisateur  on utilisateur.projet = projet.id_pro and utilisateur.role = 'ScrumMaster'  and nom_pro <> 'none' ";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+
 
 
 

@@ -12,6 +12,55 @@ class User{
         {
             $this->conn = $db;
         }
+
+        public function setUsername($username) {
+            $this->username = $username;
+        }
+    
+        // Getter for username
+        public function getUsername() {
+            return $this->username;
+        }
+    
+        // Setter for surname
+        public function setSurname($surname) {
+            $this->surname = $surname;
+        }
+    
+        // Getter for surname
+        public function getSurname() {
+            return $this->surname;
+        }
+    
+        // Setter for email
+        public function setEmail($email) {
+            $this->email = $email;
+        }
+    
+        // Getter for email
+        public function getEmail() {
+            return $this->email;
+        }
+    
+        // Setter for password
+        public function setPassword($password) {
+            $this->password = $password;
+        }
+    
+        // Getter for password
+        public function getPassword() {
+            return $this->password;
+        }
+    
+        // Setter for tel
+        public function setTel($tel) {
+            $this->tel = $tel;
+        }
+    
+        // Getter for tel
+        public function getTel() {
+            return $this->tel;
+        }
         
     public function register($username, $surname, $email, $password, $tel) {
 
@@ -72,6 +121,22 @@ class User{
         } else {
             return "L'email ou le mot de passe est incorrect.";
         }
+    }
+
+    public function logout()
+    {
+        // Start the session
+        session_start();
+
+        // Unset all session variables
+        $_SESSION = array();
+
+        // Destroy the session
+        session_destroy();
+
+        // Redirect to the login page
+        header("Location: login.php");
+        exit();
     }
     
     
