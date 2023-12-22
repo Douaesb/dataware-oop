@@ -4,6 +4,7 @@ require_once 'User.php';
 require_once 'database.php';
 
 $db = new database();  
+$conn = $db->getConn(); // Get the connection from the database object
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     $user = new User($conn);
@@ -22,6 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     } else {
         // Call the register method from your User class
         $user->register($username, $surname, $email, $password, $tel);
+        header('location: login.php');
+        exit();
     }
 }
 
